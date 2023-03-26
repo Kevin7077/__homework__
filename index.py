@@ -1,9 +1,12 @@
-'''hi
+'''
 專案在學習grid的編排
 '''
 
 import tkinter as tk
 from tkinter import ttk
+from datetime import datetime
+
+
 
 class Window(tk.Tk):
     def __init__(self, **kwargs):
@@ -62,6 +65,65 @@ class Window(tk.Tk):
 
         commitBtn = ttk.Button(bottomFrame,text='計算')
         commitBtn.grid(column=1,row=6,sticky=tk.W)
+
+
+    def calculate_bmi(self, height, weight):
+        bmi = round(float(weight)/(float(height)/100)**2, 2)
+        if bmi < 18.5:
+            message = "體重過輕"
+        elif bmi < 24:
+            message = "正常範圍"
+        elif bmi < 27:
+            message = "異常範圍 : 過重"
+        elif bmi < 30:
+            message = "異常範圍 : 輕度肥胖"
+        elif bmi < 35:
+            message = "異常範圍 : 中度肥胖"
+        else:
+            message = "異常範圍 : 重度肥胖"
+
+        name = self.name_entry.get()
+        birthdate_str = self.birthdate_entry.get()
+        height_str = self.height_entry.get()
+        weight_str = self.weight_entry.get()
+
+        if not name:
+            self.messageText.configure(state=tk.NORMAL)
+            self.messageText.delete('1.0', tk.END)
+            self.messageText.insert("insert", "姓名不能為空")
+            self.messageText.configure(state=tk.DISABLED)
+            return
+        try:
+            birthdate = datetime.strptime(birthdate_str, "%Y/%m/%d")
+        except ValueError:
+            self.messageText.configure(state=tk.NORMAL)
+            self.messageText.delete('1.0', tk.END)
+            self.messageText.insert("insert", "出生年月日格式不正確（應為YYYY/MM/DD）")
+            self.messageText.configure(state=tk.DISABLED)
+            return
+        try:
+            height = float(height_str)
+        except ValueError:
+            self.messageText.configure(state=tk.NORMAL)
+            self.messageText.delete('1.0', tk.END)
+            self.messageText.insert("insert", "身高格式不正確（應為數字）")
+            self.messageText.configure(state=tk.DISABLED)
+            return
+        try:
+            weight = float(weight_str)
+        except ValueError:
+            self.messageText.configure(state=tk.NORMAL)
+            self.messageText.delete('1.0', tk.END)
+            self.messageText.insert("insert", "體重格式不正確（應為數字）")
+            self.messageText.configure(state=tk.DISABLED)
+            return
+
+        self.messageText.configure(state=tk.NORMAL)
+        self.messageText.delete('1.0', tk.END)
+        self.messageText.insert("insert", f"BMI:{bmi: .2f}, {message}")
+        self.messageText.configure(state=tk.DISABLED)
+
+     
 
 def main():
     '''
