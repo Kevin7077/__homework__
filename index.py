@@ -112,8 +112,8 @@ class Window(tk.Tk):
 
     def press_commit(self) -> None:
         self.check_data()
+        
         # 日期格式判斷
-
     def check_data(self) -> None:
         dateRegex = re.compile(r"^\d\d\d\d/\d\d/\d\d$")
         nameValue = self.nameStringVar.get()
@@ -169,7 +169,7 @@ class Window(tk.Tk):
             self.messageText.delete("1.0", tk.END)
             self.messageText.insert(tk.END, "有欄位沒填或格式不正確")
             self.messageText.configure(state=tk.DISABLED)
-        # BMI計算及狀態
+        # BMI計算及BMI狀態
         else:
             bmi = weightValue / (heightValue / 100) ** 2
             if bmi < 18.5:
