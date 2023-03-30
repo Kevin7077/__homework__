@@ -6,6 +6,7 @@ import tkinter as tk
 from tkinter import ttk
 import re
 from PIL import Image, ImageTk
+from datetime import datetime
 
 
 class Window(tk.Tk):
@@ -13,10 +14,10 @@ class Window(tk.Tk):
         super().__init__(**kwargs)
         ttkStyle = ttk.Style()
         ttkStyle.theme_use('default')
-        ttkStyle.configure('red.TFrame', background='#ff0000')
-        ttkStyle.configure('white.TFrame', background='#ffffff')
+        ttkStyle.configure('red.TFrame', background='red')
+        ttkStyle.configure('white.TFrame', background='white')
         ttkStyle.configure('yellow.TFrame', background='yellow')
-        ttkStyle.configure('white.TLabel', background='#ffffff')
+        ttkStyle.configure('white.TLabel', background='white')
         ttkStyle.configure('gridLabel.TLabel', font=(
             'Helvetica', 16), foreground='#666666')
         ttkStyle.configure('gridEntry.TEntry', font=('Helvetica', 16))
@@ -27,7 +28,8 @@ class Window(tk.Tk):
         topFrame = ttk.Frame(mainFrame, height=100)
         topFrame.pack(fill=tk.X)
 
-        ttk.Label(topFrame, text="BMI試算", font=('Helvetica', '20')).pack(pady=(80, 20))
+        ttk.Label(topFrame, text="BMI試算", font=(
+            'Helvetica', '20')).pack(pady=(80, 20))
 
         bottomFrame = ttk.Frame(mainFrame)
         bottomFrame.pack(expand=True, fill=tk.BOTH)
@@ -92,7 +94,7 @@ class Window(tk.Tk):
         # ---------commitFrame結束--------------------
 
         # ---------建立Logo--------------------
-        logoImage = Image.open('images/logo.png')
+        logoImage = Image.open('images/logo1.png')
         resizeImage = logoImage.resize((180, 45), Image.LANCZOS)
         self.logoTkimage = ImageTk.PhotoImage(resizeImage)
         logoLabel = ttk.Label(self, image=self.logoTkimage, width=180)
@@ -110,12 +112,45 @@ class Window(tk.Tk):
 
     def press_commit(self) -> None:
         self.check_data()
+        # 日期格式判斷
 
     def check_data(self) -> None:
         dateRegex = re.compile(r"^\d\d\d\d/\d\d/\d\d$")
         nameValue = self.nameStringVar.get()
         birthValue = self.birthStringVar.get()
         birthMatch = re.match(dateRegex, birthValue)
+        # 年齡計算
+        today = datetime.today()
+        birthday = datetime.strptime(birthValue, "%Y/%m/%d")
+        age = today.year - birthday.year
+        # 星座判斷
+        month = birthday.month
+        day = birthday.day
+        if month == 12 and day >= 22 or month == 1 and day <= 19:
+            zodiac_sign = "摩羯座"
+        elif month == 1 and day >= 20 or month == 2 and day <= 18:
+            zodiac_sign = "水瓶座"
+        elif month == 2 and day >= 19 or month == 3 and day <= 20:
+            zodiac_sign = "双鱼座"
+        elif month == 3 and day >= 21 or month == 4 and day <= 19:
+            zodiac_sign = "白羊座"
+        elif month == 4 and day >= 20 or month == 5 and day <= 20:
+            zodiac_sign = "金牛座"
+        elif month == 5 and day >= 21 or month == 6 and day <= 21:
+            zodiac_sign = "双子座"
+        elif month == 6 and day >= 22 or month == 7 and day <= 22:
+            zodiac_sign = "巨蟹座"
+        elif month == 7 and day >= 23 or month == 8 and day <= 22:
+            zodiac_sign = "狮子座"
+        elif month == 8 and day >= 23 or month == 9 and day <= 22:
+            zodiac_sign = "处女座"
+        elif month == 9 and day >= 23 or month == 10 and day <= 22:
+            zodiac_sign = "天秤座"
+        elif month == 10 and day >= 23 or month == 11 and day <= 21:
+            zodiac_sign = "天蝎座"
+        elif month == 11 and day >= 22 or month == 12 and day <= 21:
+            zodiac_sign = "射手座"
+        # 判斷欄位是否未填寫
         if birthMatch is None:
             birthValue = ""
 
@@ -134,11 +169,9 @@ class Window(tk.Tk):
             self.messageText.delete("1.0", tk.END)
             self.messageText.insert(tk.END, "有欄位沒填或格式不正確")
             self.messageText.configure(state=tk.DISABLED)
+        # BMI計算及狀態
         else:
             bmi = weightValue / (heightValue / 100) ** 2
-            message = f"{nameValue}您好:\n"
-            message += f"出生年月日:{birthValue}\n"
-            message += f"BMI值是:{bmi:.2f}\n"
             if bmi < 18.5:
                 bmi_status = "體重過輕"
             elif bmi < 24:
@@ -151,7 +184,12 @@ class Window(tk.Tk):
                 bmi_status = "異常範圍 : 中度肥胖"
             else:
                 bmi_status = "異常範圍 : 重度肥胖"
-            message += f"狀態是:{bmi_status}"
+            message = f"{nameValue}您好:\n"
+            message += f"出生年月日:{birthValue}\n"
+            message += f"BMI值是:{bmi:.2f}\n"
+            message += f"狀態是:{bmi_status}\n"
+            message += f"您的年齡:{age}\n"
+            message += f"您的星座:{zodiac_sign}"
 
             self.messageText.configure(state=tk.NORMAL)
             self.messageText.delete("1.0", tk.END)
